@@ -1,0 +1,33 @@
+---
+
+- name: add the file with confidential data .npmrc
+  copy:
+    dest: "{{ project_path }}/.npmrc"
+    content: |
+      # FONT AWESOME PRO
+      @fortawesome:registry=https://npm.fontawesome.com/
+      //npm.fontawesome.com/:_authToken=934ACEEC-7DDB-4E69-BC9B-58399C050E14
+
+- name: add the env file .env
+  copy:
+    dest: "{{ project_path }}/.env"
+    content: |
+      # ENVIRONMENT
+      NODE_ENV={{env}}
+      NODE_PATH=./src
+      REACT_APP_API_HOST="http://{{ inventory_hostname }}"
+
+- name: Install packages based on package.json.
+  become: yes
+  become_user: "{{ gunicorn_user }}"
+  shell: yarn install
+  args:
+    chdir: "{{ project_path }}"
+
+
+- name: Run the build script
+  become: yes
+  become_user: "{{ gunicorn_user }}"
+  shell: yarn build
+  args:
+    chdir: "{{ project_path }}"

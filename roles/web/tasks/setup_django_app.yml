@@ -1,0 +1,61 @@
+---
+
+- name: Install packages required by the Django app inside virtualenv
+  pip: virtualenv={{ virtualenv_path }} requirements={{ requirements_file }}
+
+- name: create the file for setting the right environment
+  copy:
+      dest: "{{ project_path }}/{{application_name}}/settings/__init__.py"
+      content: |
+        # SET UP THE ENVIRONNMENT
+        from {{application_name}}.settings.{{env}} import *
+
+- name: create the file with the right variables
+  copy:
+      dest: "{{ project_path }}/{{application_name}}/settings.ini"
+      content: |
+        [settings]
+        DEBUG=False
+        SECRET_KEY=6hr1e10)s2jm9&g25o&l!++-1&@&un*c@w)icxcx*!cx+ln6s
+        DATABASE_HOST=localhost
+        DATABASE_USER={{db_user}}
+        DATABASE_PASSORD={{db_password}}
+        DATABASE_PORT=5432
+
+
+- name: Run the Django syncdb command ("{{run_django_syncdb}}") ("{{ virtualenv_path }}") with ("{{ django_settings_file }}")
+  become: yes
+  become_user: "{{gunicorn_user}}"
+  django_manage:
+    command: syncdb
+    app_path: "{{ project_path }}"
+    virtualenv: "{{ virtualenv_path }}"
+    settings: "{{ django_settings_file }}"
+  environment: "{{ django_environment }}"
+  when: (run_django_syncdb is defined) and (run_django_syncdb)
+  tags: django.syncdb
+
+- name: Run Django database migrations
+  become: yes
+  become_user: "{{gunicorn_user}}"
+  django_manage:
+    command: migrate
+    app_path: "{{ project_path }}"
+    virtualenv: "{{ virtualenv_path }}"
+    settings: "{{ django_settings_file }}"
+  environment: "{{ django_environment }}"
+  when: (run_django_db_migrations is defined) and (run_django_db_migrations)
+  tags: django.migrate
+
+- name: Run Django collectstatic
+  become: yes
+  become_user: "{{gunicorn_user}}"
+  django_manage:
+    command: collectstatic
+    app_path: "{{ project_path }}"
+    virtualenv: "{{ virtualenv_path }}"
+    settings: "{{ django_settings_file }}"
+  environment: "{{ django_environment }}"
+  when: run_django_collectstatic is defined and run_django_collectstatic
+  notify: restart application
+  tags: django.collectstatic

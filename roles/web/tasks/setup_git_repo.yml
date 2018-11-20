@@ -1,0 +1,20 @@
+---
+
+- name: Setup the Git repo '{{ git_repo }}'
+  become: yes
+  become_user: "{{ gunicorn_user }}"
+  git: repo={{ git_repo }}
+       version={{ git_branch }}
+       dest={{ project_path }}
+       accept_hostkey=yes
+       force=yes
+  when: setup_git_repo is defined and setup_git_repo
+  notify: restart application
+  tags: git
+
+- name: Delete all .pyc files
+  command: find . -name '*.pyc' -delete
+  args:
+    chdir: "{{ project_path }}"
+  tags: git
+  changed_when: False

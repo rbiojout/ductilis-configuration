@@ -1,0 +1,27 @@
+---
+
+- name: Create the application user in "{{ virtualenv_path }}"
+  user:
+    name: "{{ gunicorn_user }}"
+    shell: /sbin/sh
+    state: present
+    home: "{{ virtualenv_path }}"
+    create_home: yes
+
+- name: Create the application group
+  group:
+    name: "{{ gunicorn_group }}"
+    system: yes
+    state: present
+
+- name: Add the application user to the application group
+  user:
+    name: "{{ gunicorn_user }}"
+    group: "{{ gunicorn_group }}"
+    state: present
+
+- name: Add the super user to the application group
+  user:
+    name: "{{remote_user}}"
+    group: "{{gunicorn_group }}"
+    state: present
