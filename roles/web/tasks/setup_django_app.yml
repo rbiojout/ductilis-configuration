@@ -11,16 +11,10 @@
         from {{application_name}}.settings.{{env}} import *
 
 - name: create the file with the right variables
-  copy:
-      dest: "{{ project_path }}/{{application_name}}/settings.ini"
-      content: |
-        [settings]
-        DEBUG=False
-        SECRET_KEY=6hr1e10)s2jm9&g25o&l!++-1&@&un*c@w)icxcx*!cx+ln6s
-        DATABASE_HOST=localhost
-        DATABASE_USER={{db_user}}
-        DATABASE_PASSORD={{db_password}}
-        DATABASE_PORT=5432
+  template:
+    src: settings_ini.j2
+    dest: "{{ project_path }}/{{application_name}}/settings.ini"
+    backup: no
 
 
 - name: Run the Django syncdb command ("{{run_django_syncdb}}") ("{{ virtualenv_path }}") with ("{{ django_settings_file }}")
@@ -59,3 +53,13 @@
   when: run_django_collectstatic is defined and run_django_collectstatic
   notify: restart application
   tags: django.collectstatic
+
+- name: Restart the application
+  become: yes
+  become_user: root
+  command: "supervisorctl restart {{ application_name }}"
+
+- name: Restart celery
+  become: yes
+  become_user: root
+  command: "supervisorctl restart {{ celery_application_name }}"

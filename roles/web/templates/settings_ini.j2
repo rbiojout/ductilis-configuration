@@ -1,0 +1,10 @@
+[settings]
+DEBUG=False
+SECRET_KEY={{ django_secret_key }}
+DATABASE_HOST=localhost
+DATABASE_USER={{ db_user }}
+DATABASE_PASSORD={{ db_password }}
+DATABASE_PORT=5432
+
+# make sure to have no trailing slash for the uri
+CELERY_BROKER_URL= amqp://{{ rabbitmq_application_user }}:{{ rabbitmq_application_password }}@localhost:5672/{{ rabbitmq_application_vhost }}

@@ -1,0 +1,8 @@
+- name: install logrotate configuration for webapp
+  template:
+    src: logrotate_webapp.j2
+    dest: "/etc/logrotate.d/{{ application_name }}"
+  tags:
+    - "install"
+    - "install:app-configuration"
+    - "logrotate"

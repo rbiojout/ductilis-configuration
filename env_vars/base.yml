@@ -1,9 +1,11 @@
 ---
 
-git_repo: https://github.com/rbiojout/datatrade.git
+git_repo: https://github.com/rbiojout/ductilis.git
 
-project_name: datatrade
-application_name: datatrade
+project_name: ductilis
+application_name: ductilis
+
+celery_application_name: celery
 
 remote_user: ubuntu
 

@@ -30,5 +30,14 @@
 
 - include: setup_users.yml
 
+- name: install logrotate configuration
+  template:
+    src: logrotate_rabbitmq.j2
+    dest: /etc/logrotate.d/rabbitmq-server
+  tags:
+    - "install"
+    - "install:app-configuration"
+    - "logrotate"
+
 - name: Ensure that the RabbitMQ service is running
   service: name=rabbitmq-server state=started enabled=yes

@@ -1,6 +1,6 @@
 ---
 
-ansible_python_interpreter: /usr/bin/python3
+ansible_python_interpreter: /usr/bin/python3.6
 
 server_user: ubuntu
 
