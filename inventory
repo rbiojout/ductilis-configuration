@@ -4,8 +4,8 @@ env=development
 
 [webservers]
 #ec2-35-180-198-213.eu-west-3.compute.amazonaws.com
-ec2-35-180-189-21.eu-west-3.compute.amazonaws.com
+app.ductilis.com
 
 [dbservers]
 #ec2-35-180-198-213.eu-west-3.compute.amazonaws.com
-ec2-35-180-189-21.eu-west-3.compute.amazonaws.com
+app.ductilis.com

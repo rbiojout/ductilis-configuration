@@ -1,0 +1,29 @@
+{% for w in CELERY_WORKERS %}
+[program:{{celery_application_name}}_{{ w.service_variant }}_{{ w.queue }}_{{ w.concurrency }}]
+{% if (w.queue == 'beat') %}
+command={{ celery_scripts_dir }}/worker.sh --app={{ w.service_variant }} beat --loglevel=INFO --scheduler="django_celery_beat.schedulers:DatabaseScheduler"
+{% else %}
+command={{ celery_scripts_dir }}/worker.sh --app={{ w.service_variant }} worker -E --loglevel=INFO --queues="{{ w.queue }}" --concurrency={{ w.concurrency }} -n {{celery_application_name}}_{{ w.service_variant }}_{{ w.queue }}@%%h
+{% endif %}
+directory={{ project_path }}
+user={{ celery_user }}
+numprocs=1
+killasgroup=true
+stopwaitsecs={{ w.stopwaitsecs | default(432000) }}
+; Set autorestart to `true`. The default value for autorestart is `unexpected`, but celery < 4.x will exit
+; with an exit code of zero for certain types of unrecoverable errors, so we must make sure that the workers
+; are auto restarted even when exiting with code 0.
+; The Celery bug was reported in https://github.com/celery/celery/issues/2024, and is fixed in Celery 4.0.0.
+autostart=true
+autorestart=true
+startsecs=60
+
+stdout_logfile={{ celery_log_dir }}/{{ celery_application_name }}_{{ w.queue }}.log
+redirect_stderr = true
+; Set Celery priority higher than default (999)
+; so, if rabbitmq is supervised, it will start first.
+priority=1000
+{% endfor %}
+
+[group:{{celery_application_name}}]
+programs={%- for w in CELERY_WORKERS %}{{celery_application_name}}_{{ w.service_variant }}_{{ w.queue }}_{{ w.concurrency }}{%- if not loop.last %},{%- endif %}{%- endfor %}

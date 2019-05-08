@@ -9,6 +9,12 @@ celery_application_name: celery
 
 remote_user: ubuntu
 
+virtualenv_path: "/webapps/{{ application_name }}"
+project_path: "{{ virtualenv_path }}/{{ project_name }}"
+application_log_dir: "{{ virtualenv_path }}/var/logs"
+application_log_file: "{{ application_log_dir }}/gunicorn_supervisor.log"
+
+
 # Note that this PPA doesn't guarantee timely updates in case of security issues.
 # Simply remove these two vars below if you prefer to use the official PPA and
 # default Python version that came with your Linux distro.

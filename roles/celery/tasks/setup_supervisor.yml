@@ -21,4 +21,6 @@
         force=no
 
 - name: Re-read the Supervisor config files
-  supervisorctl: name={{ celery_application_name }} state=present
+  supervisorctl:
+    name={{ celery_application_name }}
+    state=restarted
