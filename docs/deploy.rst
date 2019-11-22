@@ -1,5 +1,5 @@
 ################################
-Deploy
+Deploy.
 ################################
 
 This explains the logic regarding the differents tasks used for deployment of the Ductilis application.
